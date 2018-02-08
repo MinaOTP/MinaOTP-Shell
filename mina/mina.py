@@ -14,6 +14,7 @@ import pyotp
 ISSUER_LEN = 16
 REMARK_LEN = 16
 OTP_LEN = 16
+JSON_URL = './.mina.json'
 
 # configure the basic logging level
 logging.basicConfig(
@@ -29,11 +30,10 @@ def load_json(json_url):
 # list all tokens
 def list(tokens):
     print("ISSUER".center(ISSUER_LEN, "="), "REMARK".center(REMARK_LEN, "="), "OTP".center(OTP_LEN, "="))
-    for token in tokens:
-        secret = token["secret"]
-        issuer = token["issuer"]
-        remark = token["remark"]
+    for issuer, props  in tokens.items():
         # generate tmp TOTO object and calculate the token
+        secret = props["secret"]
+        remark = props["remark"]
         totp_tmp = pyotp.TOTP(secret)
         current_otp = totp_tmp.now()
         print(issuer.center(ISSUER_LEN), remark.center(REMARK_LEN), current_otp.center(OTP_LEN))
@@ -41,22 +41,24 @@ def list(tokens):
 # show a token on-time
 def show(issuer, tokens):
     print("ISSUER".center(ISSUER_LEN, "="), "REMARK".center(REMARK_LEN, "="), "OTP".center(OTP_LEN, "="))
-    for token in tokens:
-        if token["issuer"] == issuer:
-            secret = token["secret"]
-            issuer = token["issuer"]
-            remark = token["remark"]
+    for _issuer, props in tokens.items():
+        if _issuer == issuer:
+            secret = props["secret"]
+            remark = props["remark"]
             # generate tmp TOTO object and calculate the token
             totp_tmp = pyotp.TOTP(secret)
             current_otp = totp_tmp.now()
             print(issuer.center(ISSUER_LEN), remark.center(REMARK_LEN), current_otp.center(OTP_LEN))
             break
 
+# add a new token
+def add(issuer, remark, secret):
+    print("add a new token")
+
 # the main function to control the script
 def main():
     # Load the json file
-    _json_url = './.mina.json'
-    tokens = load_json(_json_url)
+    tokens = load_json(JSON_URL)
 
     # Define the basic_parser and subparsers
     logging.info('Initial basic_parser')
