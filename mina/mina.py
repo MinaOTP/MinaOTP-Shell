@@ -28,7 +28,7 @@ def load_json(json_url):
 
 # list all tokens
 def list(tokens):
-    print("SECRET".center(ISSUER_LEN, "="), "REMARK".center(REMARK_LEN, "="), "OTP".center(OTP_LEN, "="))
+    print("ISSUER".center(ISSUER_LEN, "="), "REMARK".center(REMARK_LEN, "="), "OTP".center(OTP_LEN, "="))
     for token in tokens:
         secret = token["secret"]
         issuer = token["issuer"]
@@ -37,6 +37,20 @@ def list(tokens):
         totp_tmp = pyotp.TOTP(secret)
         current_otp = totp_tmp.now()
         print(issuer.center(ISSUER_LEN), remark.center(REMARK_LEN), current_otp.center(OTP_LEN))
+
+# show a token on-time
+def show(issuer, tokens):
+    print("ISSUER".center(ISSUER_LEN, "="), "REMARK".center(REMARK_LEN, "="), "OTP".center(OTP_LEN, "="))
+    for token in tokens:
+        if token["issuer"] == issuer:
+            secret = token["secret"]
+            issuer = token["issuer"]
+            remark = token["remark"]
+            # generate tmp TOTO object and calculate the token
+            totp_tmp = pyotp.TOTP(secret)
+            current_otp = totp_tmp.now()
+            print(issuer.center(ISSUER_LEN), remark.center(REMARK_LEN), current_otp.center(OTP_LEN))
+            break
 
 # the main function to control the script
 def main():
@@ -86,7 +100,7 @@ def main():
         help="Show a token on-time"
     )
     show_parser.add_argument(
-        "token",
+        "issuer",
         help="issuer of the token"
     )
 
@@ -103,7 +117,8 @@ def main():
     if command == "remove":
         print("remove a token")
     if command == "show":
-        print("show a token on-time")
+        target_issuer = args.issuer
+        show(target_issuer, tokens)
 
 
 if __name__ == '__main__':
