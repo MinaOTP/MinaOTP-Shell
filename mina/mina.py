@@ -5,6 +5,7 @@
 # @Link    : 
 # @Disc    : add remove show and list totp tokens in the terminal
 
+import json
 import logging
 import argparse
 
@@ -13,9 +14,21 @@ logging.basicConfig(
     level=logging.DEBUG,
     format="[%(asctime)s] %(name)s:%(levelname)s: %(message)s"
 )
-    
+# load tokens from json file
+def load_json(json_url):
+    with open(json_url, 'r') as f:
+        return json.load(f)
+
+# list all tokens
+def list():
+    logging.info("List all tokens")
+
 # the main function to control the script
 def main():
+    # Load the json file
+    _json_url = './.mina.json'
+    tokens = load_json(_json_url)
+    print(tokens)
     # Define the basic_parser and subparsers
     logging.info('Initial basic_parser')
 
@@ -69,7 +82,7 @@ def main():
     command = arguments.pop("command")
 
     if command == "list":
-        print("list all tokens")
+        list()
     if command == "add":
         print("add a new token")
     if command == "remove":
