@@ -9,7 +9,8 @@ import json
 import logging
 import argparse
 import pyotp
-from os import path
+import os
+import os.path
 
 # global variable
 OID_LEN = 6
