@@ -28,6 +28,11 @@ def load_json(json_url):
     with open(json_url, "r") as f:
         return json.load(f)
 
+# update token to json file
+def upd_json(data, json_url):
+    with open(json_url, "w") as f:
+        json.dump(data, f, sort_keys=True, indent=4, separators=(',', ':'))
+
 # list all tokens
 def list(tokens):
     print("OID".center(OID_LEN, "="), "ISSUER".center(ISSUER_LEN, "="), "REMARK".center(REMARK_LEN, "="), "OTP".center(OTP_LEN, "="))
@@ -53,8 +58,9 @@ def show(oid, tokens):
     print(oid.center(OID_LEN), issuer.center(ISSUER_LEN), remark.center(REMARK_LEN), current_otp.center(OTP_LEN))
 
 # add a new token
-def add(issuer, remark, secret):
-    print("add a new token")
+def add(otp, tokens):
+    tokens.append(otp)
+    upd_json(tokens, JSON_URL)
 
 # the main function to control the script
 def main():
@@ -132,10 +138,12 @@ def main():
     if command == "list":
         list(tokens)
     if command == "add":
-        _secret = args.secret
-        _issuer = args.issuer
-        _remark = args.remark
-        print(_secret, _issuer, _remark)
+        otp = {
+            "secret": args.secret,
+            "issuer": args.issuer,
+            "remark": args.remark
+        }
+        add(otp, tokens)
     if command == "remove":
         print("remove a token")
     if command == "show":
