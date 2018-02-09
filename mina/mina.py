@@ -11,6 +11,7 @@ import argparse
 import pyotp
 
 # global variable
+OID_LEN = 6
 ISSUER_LEN = 16
 REMARK_LEN = 16
 OTP_LEN = 16
@@ -29,14 +30,15 @@ def load_json(json_url):
 
 # list all tokens
 def list(tokens):
-    print("ISSUER".center(ISSUER_LEN, "="), "REMARK".center(REMARK_LEN, "="), "OTP".center(OTP_LEN, "="))
-    for issuer, props  in tokens.items():
+    print("OID".center(OID_LEN, "="), "ISSUER".center(ISSUER_LEN, "="), "REMARK".center(REMARK_LEN, "="), "OTP".center(OTP_LEN, "="))
+    for oid, token in enumerate(tokens):
         # generate tmp TOTO object and calculate the token
-        secret = props["secret"]
-        remark = props["remark"]
+        secret = token["secret"]
+        remark = token["remark"]
+        issuer = token["issuer"]
         totp_tmp = pyotp.TOTP(secret)
         current_otp = totp_tmp.now()
-        print(issuer.center(ISSUER_LEN), remark.center(REMARK_LEN), current_otp.center(OTP_LEN))
+        print(str(oid).center(OID_LEN), issuer.center(ISSUER_LEN), remark.center(REMARK_LEN), current_otp.center(OTP_LEN))
 
 # show a token on-time
 def show(issuer, tokens):
@@ -85,6 +87,22 @@ def main():
         "add",
         help="Add a new token."
     )
+    # OTP optional arguments
+    add_parser.add_argument(
+        "--secret",
+        required=True,
+        help="Secret info to generate otp object."
+    )
+    add_parser.add_argument(
+        "--issuer",
+        required=True,
+        help="Issuer info about new otp object."
+    )
+    add_parser.add_argument(
+        "--remark",
+        required=True,
+        help="Remark info about new otp object."
+    )
 
     # Subparser for the remove command
     logging.debug("Initial remove subparser")
@@ -115,7 +133,10 @@ def main():
     if command == "list":
         list(tokens)
     if command == "add":
-        print("add a new token")
+        _secret = args.secret
+        _issuer = args.issuer
+        _remark = args.remark
+        print(_secret, _issuer, _remark)
     if command == "remove":
         print("remove a token")
     if command == "show":
