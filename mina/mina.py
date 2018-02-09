@@ -9,13 +9,14 @@ import json
 import logging
 import argparse
 import pyotp
+from os import path
 
 # global variable
 OID_LEN = 6
 ISSUER_LEN = 16
 REMARK_LEN = 16
 OTP_LEN = 16
-JSON_URL = './.mina.json'
+JSON_URL = os.path.expanduser("~") + os.sep + '.mina.json'
 
 # configure the basic logging level
 logging.basicConfig(
