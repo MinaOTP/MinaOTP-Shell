@@ -41,17 +41,16 @@ def list(tokens):
         print(str(oid).center(OID_LEN), issuer.center(ISSUER_LEN), remark.center(REMARK_LEN), current_otp.center(OTP_LEN))
 
 # show a token on-time
-def show(issuer, tokens):
-    print("ISSUER".center(ISSUER_LEN, "="), "REMARK".center(REMARK_LEN, "="), "OTP".center(OTP_LEN, "="))
-    for _issuer, props in tokens.items():
-        if _issuer == issuer:
-            secret = props["secret"]
-            remark = props["remark"]
-            # generate tmp TOTO object and calculate the token
-            totp_tmp = pyotp.TOTP(secret)
-            current_otp = totp_tmp.now()
-            print(issuer.center(ISSUER_LEN), remark.center(REMARK_LEN), current_otp.center(OTP_LEN))
-            break
+def show(oid, tokens):
+    print("OID".center(OID_LEN, "="), "ISSUER".center(ISSUER_LEN, "="), "REMARK".center(REMARK_LEN, "="), "OTP".center(OTP_LEN, "="))
+    token = tokens[int(oid)]
+    issuer = token["issuer"]
+    secret = token["secret"]
+    remark = token["remark"]
+    # generate tmp TOTO object and calculate the token
+    totp_tmp = pyotp.TOTP(secret)
+    current_otp = totp_tmp.now()
+    print(oid.center(OID_LEN), issuer.center(ISSUER_LEN), remark.center(REMARK_LEN), current_otp.center(OTP_LEN))
 
 # add a new token
 def add(issuer, remark, secret):
@@ -63,7 +62,7 @@ def main():
     tokens = load_json(JSON_URL)
 
     # Define the basic_parser and subparsers
-    logging.info('Initial basic_parser')
+    logging.debug('Initial basic_parser')
 
     _desc = 'MinaOTP is a two-factor authentication tool that runs in the terminal'
     basic_parser = argparse.ArgumentParser(description=_desc)
@@ -120,8 +119,8 @@ def main():
         help="Show a token on-time"
     )
     show_parser.add_argument(
-        "issuer",
-        help="issuer of the token"
+        "oid",
+        help="oid of the token"
     )
 
     # handle the args input by user
@@ -140,8 +139,8 @@ def main():
     if command == "remove":
         print("remove a token")
     if command == "show":
-        target_issuer = args.issuer
-        show(target_issuer, tokens)
+        target_oid = args.oid
+        show(target_oid, tokens)
 
 
 if __name__ == '__main__':
