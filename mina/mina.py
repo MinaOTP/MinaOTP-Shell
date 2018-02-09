@@ -62,6 +62,11 @@ def add(otp, tokens):
     tokens.append(otp)
     upd_json(tokens, JSON_URL)
 
+# remove a token
+def remove(oid, tokens):
+    tokens.pop(int(oid))
+    upd_json(tokens, JSON_URL)
+
 # the main function to control the script
 def main():
     # Load the json file
@@ -116,6 +121,10 @@ def main():
         "remove",
         help="Remove a token."
     )
+    remove_parser.add_argument(
+        "oid",
+        help="oid of the token"
+    )
 
     # Subparser for the show command
     logging.debug("Initial show subparser")
@@ -145,7 +154,8 @@ def main():
         }
         add(otp, tokens)
     if command == "remove":
-        print("remove a token")
+        target_oid = args.oid
+        remove(target_oid, tokens)
     if command == "show":
         target_oid = args.oid
         show(target_oid, tokens)
