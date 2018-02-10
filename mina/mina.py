@@ -5,6 +5,7 @@
 # @Link    : 
 # @Disc    : add remove show and list totp tokens in the terminal
 
+from __future__ import print_function
 import json
 import logging
 import argparse
@@ -37,7 +38,7 @@ def upd_json(data, json_url):
 
 # list all tokens
 def list(tokens):
-    print("OID".center(OID_LEN, "="), "ISSUER".center(ISSUER_LEN, "="), "REMARK".center(REMARK_LEN, "="), "OTP".center(OTP_LEN, "="))
+    print("OID".center(OID_LEN, "="), "ISSUER".center(ISSUER_LEN, "="), "REMARK".center(REMARK_LEN, "="), "OTP".center(OTP_LEN, "="), sep=' ')
     for oid, token in enumerate(tokens):
         # generate tmp TOTO object and calculate the token
         secret = token["secret"]
@@ -45,11 +46,11 @@ def list(tokens):
         issuer = token["issuer"]
         totp_tmp = pyotp.TOTP(secret)
         current_otp = totp_tmp.now()
-        print(str(oid).center(OID_LEN), issuer.center(ISSUER_LEN), remark.center(REMARK_LEN), current_otp.center(OTP_LEN))
+        print(str(oid).center(OID_LEN), issuer.center(ISSUER_LEN), remark.center(REMARK_LEN), current_otp.center(OTP_LEN), sep=' ')
 
 # show a token on-time
 def show(oid, tokens):
-    print("OID".center(OID_LEN, "="), "ISSUER".center(ISSUER_LEN, "="), "REMARK".center(REMARK_LEN, "="), "OTP".center(OTP_LEN, "="))
+    print("OID".center(OID_LEN, "="), "ISSUER".center(ISSUER_LEN, "="), "REMARK".center(REMARK_LEN, "="), "OTP".center(OTP_LEN, "="), sep=' ')
     token = tokens[int(oid)]
     issuer = token["issuer"]
     secret = token["secret"]
@@ -57,7 +58,7 @@ def show(oid, tokens):
     # generate tmp TOTO object and calculate the token
     totp_tmp = pyotp.TOTP(secret)
     current_otp = totp_tmp.now()
-    print(oid.center(OID_LEN), issuer.center(ISSUER_LEN), remark.center(REMARK_LEN), current_otp.center(OTP_LEN))
+    print(oid.center(OID_LEN), issuer.center(ISSUER_LEN), remark.center(REMARK_LEN), current_otp.center(OTP_LEN), sep=' ')
 
 # add a new token
 def add(otp, tokens):
