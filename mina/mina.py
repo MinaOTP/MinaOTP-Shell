@@ -29,7 +29,10 @@ logging.basicConfig(
 # load tokens from json file
 def load_json(json_url):
     with open(json_url, "r") as f:
-        return json.load(f)
+        if os.path.getsize(json_url):
+            return json.load(f)
+        else:
+            raise Warning
 
 # update token to json file
 def upd_json(data, json_url):
@@ -73,95 +76,100 @@ def remove(oid, tokens):
 # the main function to control the script
 def main():
     # Load the json file
-    tokens = load_json(JSON_URL)
+    try:
+        tokens = load_json(JSON_URL)
+    except IOError:
+        print("ERROR: there is no .mina.json file")
+    except Warning:
+        print("WARNING: there is no any otp tokens in the .mina.json file.")
+    else:
+        # Define the basic_parser and subparsers
+        logging.debug('Initial basic_parser')
 
-    # Define the basic_parser and subparsers
-    logging.debug('Initial basic_parser')
+        _desc = 'MinaOTP is a two-factor authentication tool that runs in the terminal'
+        basic_parser = argparse.ArgumentParser(description=_desc)
+        subparsers = basic_parser.add_subparsers(
+            dest="command",
+            help="Available commands"
+        )
 
-    _desc = 'MinaOTP is a two-factor authentication tool that runs in the terminal'
-    basic_parser = argparse.ArgumentParser(description=_desc)
-    subparsers = basic_parser.add_subparsers(
-        dest="command",
-        help="Available commands"
-    )
+        # Subparser for the list command
+        logging.debug("Initial list subparser")
 
-    # Subparser for the list command
-    logging.debug("Initial list subparser")
+        list_parser = subparsers.add_parser(
+            "list",
+            help="List all tokens."
+        )
 
-    list_parser = subparsers.add_parser(
-        "list",
-        help="List all tokens."
-    )
+        # Subparser for the add command
+        logging.debug("Initial add subparser")
 
-    # Subparser for the add command
-    logging.debug("Initial add subparser")
+        add_parser = subparsers.add_parser(
+            "add",
+            help="Add a new token."
+        )
+        # OTP optional arguments
+        add_parser.add_argument(
+            "--secret",
+            required=True,
+            help="Secret info to generate otp object."
+        )
+        add_parser.add_argument(
+            "--issuer",
+            required=True,
+            help="Issuer info about new otp object."
+        )
+        add_parser.add_argument(
+            "--remark",
+            required=True,
+            help="Remark info about new otp object."
+        )
 
-    add_parser = subparsers.add_parser(
-        "add",
-        help="Add a new token."
-    )
-    # OTP optional arguments
-    add_parser.add_argument(
-        "--secret",
-        required=True,
-        help="Secret info to generate otp object."
-    )
-    add_parser.add_argument(
-        "--issuer",
-        required=True,
-        help="Issuer info about new otp object."
-    )
-    add_parser.add_argument(
-        "--remark",
-        required=True,
-        help="Remark info about new otp object."
-    )
+        # Subparser for the remove command
+        logging.debug("Initial remove subparser")
 
-    # Subparser for the remove command
-    logging.debug("Initial remove subparser")
+        remove_parser = subparsers.add_parser(
+            "remove",
+            help="Remove a token."
+        )
+        remove_parser.add_argument(
+            "oid",
+            help="oid of the token"
+        )
 
-    remove_parser = subparsers.add_parser(
-        "remove",
-        help="Remove a token."
-    )
-    remove_parser.add_argument(
-        "oid",
-        help="oid of the token"
-    )
+        # Subparser for the show command
+        logging.debug("Initial show subparser")
 
-    # Subparser for the show command
-    logging.debug("Initial show subparser")
+        show_parser = subparsers.add_parser(
+            "show",
+            help="Show a token on-time"
+        )
+        show_parser.add_argument(
+            "oid",
+            help="oid of the token"
+        )
 
-    show_parser = subparsers.add_parser(
-        "show",
-        help="Show a token on-time"
-    )
-    show_parser.add_argument(
-        "oid",
-        help="oid of the token"
-    )
+        # handle the args input by user
+        args = basic_parser.parse_args()
+        # convert arguments to dict
+        arguments = vars(args)
+        command = arguments.pop("command")
 
-    # handle the args input by user
-    args = basic_parser.parse_args()
-    # convert arguments to dict
-    arguments = vars(args)
-    command = arguments.pop("command")
-
-    if command == "list":
-        list(tokens)
-    if command == "add":
-        otp = {
-            "secret": args.secret,
-            "issuer": args.issuer,
-            "remark": args.remark
-        }
-        add(otp, tokens)
-    if command == "remove":
-        target_oid = args.oid
-        remove(target_oid, tokens)
-    if command == "show":
-        target_oid = args.oid
-        show(target_oid, tokens)
+        if command == "list":
+            list(tokens)
+        if command == "add":
+            otp = {
+                "secret": args.secret,
+                "issuer": args.issuer,
+                "remark": args.remark
+            }
+            add(otp, tokens)
+        if command == "remove":
+            target_oid = args.oid
+            remove(target_oid, tokens)
+        if command == "show":
+            target_oid = args.oid
+            show(target_oid, tokens)
 
 
 if __name__ == '__main__':
