@@ -16,17 +16,18 @@ pip install mina
 
 ```shell
 $ mina -h
-usage: mina [-h] {list,add,remove,show} ...
+usage: mina [-h] {list,add,remove,show,import} ...
 
 MinaOTP is a two-factor authentication tool that runs in the terminal
 
 positional arguments:
-  {list,add,remove,show}
+  {list,add,remove,show,import}
                         Available commands
     list                List all tokens.
     add                 Add a new token.
     remove              Remove a token.
     show                Show a token on-time
+    import              Import tokens from a local json file
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -76,7 +77,20 @@ $ mina show 2
   2          mina             otp             983418
 ```
 
+* Import tokens from a local json file
+
+```shell
+$ mina import -h
+usage: mina import [-h] file_path
+
+positional arguments:
+  file_path   path of the local json file
+
+optional arguments:
+  -h, --help  show this help message and exit
+```
+
 ### Todos
 
-- [ ] import tokens from a local json file
+- [x] import tokens from a local json file
 - [ ] export all tokens to a local json file
