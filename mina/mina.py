@@ -20,6 +20,9 @@ REMARK_LEN = 16
 OTP_LEN = 16
 JSON_URL = os.path.expanduser("~") + os.sep + '.mina.json'
 
+# dev json url
+# JSON_URL = './.mina.json'
+
 # configure the basic logging level
 logging.basicConfig(
     level=logging.INFO,
@@ -103,6 +106,25 @@ def remove(oid):
         tokens.pop(int(oid))
         upd_json(tokens, JSON_URL)
 
+# import from a local json file
+def import_from(file_path):
+    try:
+        tokens = load_json(JSON_URL)
+    except IOError:
+        print("ERROR: there is no .mina.json file")
+    except Warning:
+        print("WARNING: there is no any otp tokens in the .mina.json file.")
+    else:
+        try:
+            append_tokens = load_json(file_path)
+        except IOError:
+            print("ERROR: " + file_path + " is not a file!")
+        except Warning:
+            print("WARNING: there is no any otp tokens in the file!")
+        else:  
+            tokens = tokens + append_tokens
+            upd_json(tokens, JSON_URL)
+
 # the main function to control the script
 def main():
     # Define the basic_parser and subparsers
@@ -171,6 +193,18 @@ def main():
         help="oid of the token"
     )
 
+    # Subparser for the import command
+    logging.debug("Initial import subparser")
+
+    import_parser = subparsers.add_parser(
+        "import",
+        help="Import tokens from a local json file"
+    )
+    import_parser.add_argument(
+        "file_path",
+        help="path of the local json file"
+    )
+
     # handle the args input by user
     args = basic_parser.parse_args()
     # convert arguments to dict
@@ -192,6 +226,9 @@ def main():
     if command == "show":
         target_oid = args.oid
         show(target_oid)
+    if command == "import":
+        file_path = args.file_path
+        import_from(file_path)
 
 
 if __name__ == '__main__':

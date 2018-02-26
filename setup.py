@@ -10,17 +10,15 @@ from codecs import open
 import os
 from os import path
 
-here = path.abspath(path.dirname(__file__))
+# here = path.abspath(path.dirname(__file__))
 
 # Get the long description from the README file
 # with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 #     long_description = f.read()
 
-print("setup")
 # touch a basic .mina.json file if NOT EXIST
 default = os.path.expanduser("~") + os.sep + '.mina.json'
 if not os.path.isfile(default):
-    print("touch file")
     cmd = 'touch ' + default
     os.system(cmd)
 
@@ -30,7 +28,7 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='1.0.4',
+    version='1.0.6',
 
     description='TOTP authenticator implement as a terminal tool',
     long_description='TOTP authenticator implement as a terminal tool, and this project is developed in Python',
