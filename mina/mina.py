@@ -14,6 +14,7 @@ import os
 import os.path
 import time
 import datetime
+import sys
 
 # global variable
 OID_LEN = 6
@@ -52,13 +53,14 @@ def time_process():
         b = '#' * sharp_c + ''
         while sharp_c <= 30:
             expired_time = 30 - sharp_c
-            print("expired after: [" + b.ljust(30) + "] " + str(expired_time).rjust(2) + "s", end='\r')
+            sys.stdout.write("expired after: [" + b.ljust(30) + "] " + str(expired_time).rjust(2) + "s\r")
+            sys.stdout.flush()
             time.sleep(1)
             b = "#" + b
             sharp_c += 1
         print("tokens have been expired, try to list or show again..")
     except KeyboardInterrupt:
-        print("\nthe script has been quit manually.")
+        print("\nthe script has been quited manually.")
 
 # list all tokens
 def list():
