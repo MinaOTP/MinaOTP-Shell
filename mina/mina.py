@@ -12,6 +12,8 @@ import argparse
 import pyotp
 import os
 import os.path
+import time
+import datetime
 
 # global variable
 OID_LEN = 6
@@ -42,6 +44,18 @@ def upd_json(data, json_url):
     with open(json_url, "w") as f:
         json.dump(data, f, sort_keys=True, indent=4, separators=(',', ':'))
 
+# show time process
+def time_process():
+    sec = datetime.datetime.now().second
+    sharp_c = sec % 30
+    b = '#' * sharp_c + ''
+    while len(b) <= 30:
+        expired_time = 30 - datetime.datetime.now().second % 30
+        print("expired after: [" + b.ljust(30) + "] " + str(expired_time).rjust(2) + "s", end='\r')
+        time.sleep(1)
+        b = "#" + b
+    print("tokens have been expired, try to list or show again..")
+
 # list all tokens
 def list():
     try:
@@ -60,6 +74,8 @@ def list():
             totp_tmp = pyotp.TOTP(secret)
             current_otp = totp_tmp.now()
             print(str(oid).center(OID_LEN), issuer.center(ISSUER_LEN), remark.center(REMARK_LEN), current_otp.center(OTP_LEN), sep=' ')
+
+        time_process()
 
 # show a token on-time
 def show(oid):
