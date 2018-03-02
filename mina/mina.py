@@ -46,15 +46,19 @@ def upd_json(data, json_url):
 
 # show time process
 def time_process():
-    sec = datetime.datetime.now().second
-    sharp_c = sec % 30
-    b = '#' * sharp_c + ''
-    while len(b) <= 30:
-        expired_time = 30 - datetime.datetime.now().second % 30
-        print("expired after: [" + b.ljust(30) + "] " + str(expired_time).rjust(2) + "s", end='\r')
-        time.sleep(1)
-        b = "#" + b
-    print("tokens have been expired, try to list or show again..")
+    try:
+        sec = datetime.datetime.now().second
+        sharp_c = sec % 30
+        b = '#' * sharp_c + ''
+        while sharp_c <= 30:
+            expired_time = 30 - sharp_c
+            print("expired after: [" + b.ljust(30) + "] " + str(expired_time).rjust(2) + "s", end='\r')
+            time.sleep(1)
+            b = "#" + b
+            sharp_c += 1
+        print("tokens have been expired, try to list or show again..")
+    except KeyboardInterrupt:
+        print("\nthe script has been quit manually.")
 
 # list all tokens
 def list():
@@ -95,6 +99,8 @@ def show(oid):
         totp_tmp = pyotp.TOTP(secret)
         current_otp = totp_tmp.now()
         print(oid.center(OID_LEN), issuer.center(ISSUER_LEN), remark.center(REMARK_LEN), current_otp.center(OTP_LEN), sep=' ')
+
+        time_process()
 
 # add a new token
 def add(otp):
