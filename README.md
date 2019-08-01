@@ -7,7 +7,7 @@ This command-line tool will generate secure dynamic 2FA tokens for you, the `add
 ### Installation
 
 ```shell
-pip install mina
+pip install minaotp
 ```
 
 ### Usage
